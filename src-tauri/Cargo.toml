@@ -1,0 +1,43 @@
+[package]
+name = "through-life"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "through_life_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.dev]
+# 开启增量编译
+incremental = true
+# 增加编译单元数量来提升编译速度
+codegen-units = 16
+# 降低优化级别加快编译
+opt-level = 0
+
+[profile.release]
+# 适度优化，在性能和编译速度间取平衡
+opt-level = 2
+# 开启链接时优化但使用瘦模式，编译更快
+lto = "thin"
+# 增加编译单元数提升编译速度
+codegen-units = 8
+# 移除一些调试信息减小体积，但保留基本调试能力
+strip = "debuginfo"
+
