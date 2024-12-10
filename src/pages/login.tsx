@@ -2,15 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/useAuth";
 
-const Login = () => {
+const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
   const [error, setError] = useState("");
+  const [formData, setFormData] = useState({ username: "", password: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +21,8 @@ const Login = () => {
       } else {
         setError("Invalid username or password");
       }
-    } catch (err) {
-      setError("An error occurred during login");
+    } catch (error) {
+      setError(`An error occurred during login: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -39,22 +36,22 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg transform transition-all duration-500 hover:scale-105">
-        {/* Logo & Title */}
+    <div className="flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg transform transition-all">
+        {/* logo & title */}
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-gray-50">
             Welcome Back
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Please sign in to your account
+            Please sign in to use Through Life
           </p>
         </div>
 
-        {/* Form */}
+        {/* form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {/* Username Input */}
+            {/* username & password */}
             <div>
               <label
                 htmlFor="username"
@@ -63,21 +60,17 @@ const Login = () => {
                 Username
               </label>
               <input
-                id="username"
-                name="username"
                 type="text"
+                name="username"
+                id="username"
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 
-                        dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                          focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                          transition-colors duration-200"
+                className="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
                 placeholder="Enter your username"
               />
             </div>
 
-            {/* Password Input */}
             <div>
               <label
                 htmlFor="password"
@@ -86,35 +79,28 @@ const Login = () => {
                 Password
               </label>
               <input
-                id="password"
-                name="password"
                 type="password"
+                name="password"
+                id="password"
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 
-                        dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                          focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                          transition-colors duration-200"
+                className="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500  transition-colors duration-200"
                 placeholder="Enter your password"
               />
             </div>
           </div>
 
-          {/* Error Message */}
+          {/* error message */}
           {error && (
             <div className="text-red-500 text-sm text-center">{error}</div>
           )}
 
-          {/* Submit Button */}
+          {/* submit button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-3 px-4 rounded-lg text-white
-                    bg-indigo-600 hover:bg-indigo-700 
-                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                      transform transition-all duration-200 hover:scale-[1.02]"
+            className="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-gradient-to-r from-orange-600 to-gray-800 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-100 hover:scale-[1.02]"
           >
             {isLoading ? (
               <div className="flex items-center">
@@ -145,13 +131,11 @@ const Login = () => {
             )}
           </button>
 
-          {/* Additional Links */}
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-center mt-4">
             <div className="text-sm">
               <a
                 href="#"
-                className="font-medium text-indigo-600 hover:text-indigo-500 
-                        dark:text-indigo-400 dark:hover:text-indigo-300"
+                className="font-medium text-orange-700 hover:text-orange-500 dark:text-orange-600 dark:hover:text-orange-500 transform transition-all duration-200"
               >
                 Forgot your password?
               </a>
