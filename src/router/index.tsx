@@ -7,8 +7,8 @@ import {
 import Layout from "../pages/layout";
 
 // 懒加载页面组件
-const App = lazy(() => import("../App"));
 const Login = lazy(() => import("../pages/login"));
+const Map = lazy(() => import("../pages/map"));
 
 // guard 路由守卫
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
         path: "home",
         element: (
           <RequireAuth>
-            <App />
+            <Map />
           </RequireAuth>
         ),
       },
