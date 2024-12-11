@@ -36,7 +36,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center pt-28 w-full">
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg transform transition-all">
         {/* logo & title */}
         <div className="text-center">

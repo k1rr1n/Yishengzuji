@@ -8,7 +8,7 @@ import Layout from "../pages/layout";
 
 // 懒加载页面组件
 const Login = lazy(() => import("../pages/login"));
-const Map = lazy(() => import("../pages/map"));
+const Map = lazy(() => import("../pages/map"))
 
 // guard 路由守卫
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
