@@ -15,12 +15,8 @@ const Login: React.FC = () => {
     setError("");
 
     try {
-      const success = await login(formData.username, formData.password);
-      if (success) {
-        navigate("/home");
-      } else {
-        setError("Invalid username or password");
-      }
+      await login(formData.username, formData.password);
+      navigate("/home")
     } catch (error) {
       setError(`An error occurred during login: ${error}`);
     } finally {
@@ -37,7 +33,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex items-center justify-center pt-28 w-full">
-      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg transform transition-all">
+      <div className="max-w-md w-full space-y-6 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg transform transition-all">
         {/* logo & title */}
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-gray-50">
