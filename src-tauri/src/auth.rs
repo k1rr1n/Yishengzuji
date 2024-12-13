@@ -1,8 +1,7 @@
-use tauri::Manager;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
-
+use tauri::Manager;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct UserInfo {
@@ -69,7 +68,7 @@ pub async fn login(
 #[tauri::command]
 pub async fn get_login_state(app_handle: tauri::AppHandle) -> LoginState {
     let path = get_auth_file_path(&app_handle);
-    
+
     match fs::read_to_string(path) {
         Ok(content) => serde_json::from_str(&content).unwrap_or(LoginState::new()),
         Err(_) => LoginState::new(),
@@ -80,7 +79,6 @@ pub async fn get_login_state(app_handle: tauri::AppHandle) -> LoginState {
 pub async fn logout(app_handle: tauri::AppHandle) -> Result<(), String> {
     let path = get_auth_file_path(&app_handle);
     let state = LoginState::new();
-    
-    fs::write(path, serde_json::to_string(&state).unwrap())
-        .map_err(|e| e.to_string())
+
+    fs::write(path, serde_json::to_string(&state).unwrap()).map_err(|e| e.to_string())
 }

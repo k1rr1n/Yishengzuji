@@ -1,19 +1,27 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
+  useNavigate,
 } from "react-router-dom";
 import Layout from "../pages/layout";
+import { useAuth } from "../utils/useAuth";
 
 // 懒加载页面组件
 const Login = lazy(() => import("../pages/login"));
-const Map = lazy(() => import("../pages/map"))
+const Map = lazy(() => import("../pages/map"));
 
 // guard 路由守卫
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-  // const {isAuthenticated} = useAuth();
-  // if(!isAuthenticated) return <Navigate to="/login" replace />
+  // const navigate = useNavigate();
+  // const { checkLoginState } = useAuth();
+
+  // useEffect(() => {
+  //   checkLoginState();
+  //   navigate("/login");
+  // }, []);
+
   return children;
 };
 

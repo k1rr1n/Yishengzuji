@@ -10,16 +10,11 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@deck.gl/layers": "^9.0.37",
-    "@deck.gl/mapbox": "^9.0.37",
-    "@deck.gl/react": "^9.0.37",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-shell": "^2",
-    "deck.gl": "^9.0.37",
     "mapbox-gl": "^3.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-map-gl": "^7.1.7",
     "react-router-dom": "^7.0.2",
     "zustand": "^5.0.2"
   },
