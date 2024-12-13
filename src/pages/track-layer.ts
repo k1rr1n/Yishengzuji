@@ -26,14 +26,12 @@ export class TrackLayer {
     await this.loadLayers();
   }
 
-  private async loadData() {
-    const startTime = 0;
-    const endTime = 180000000000;
-
+  public async loadData(startTime: number = 0, endTime: number = 1800000000) {
     const res = await invoke("get_track_data", {
       startTime,
       endTime,
     });
+
     this.data = {
       type: "FeatureCollection",
       features: (res as any[]).map((p) => ({
@@ -50,6 +48,8 @@ export class TrackLayer {
   }
 
   private async loadLayers() {
+    this.destroy();
+
     const sourceId = "track-data-source";
     const layerId = "track-data-layer";
 

@@ -14,13 +14,10 @@ pub async fn get_track_data(
     db: State<'_, DbState>, // State: tauri的状态管理，允许在不同的命令处理器间共享数据库连接
 ) -> Result<Vec<Point>, String> {
     println!("接收到查询请求: {} 到 {}", start_time, end_time);
-    
+
     let db = db.lock().await;
     match db.get_track_data(start_time, end_time).await {
-        Ok(data) => {
-            println!("查询成功返回 {} 条数据", data.len());
-            Ok(data)
-        }
+        Ok(data) => Ok(data),
         Err(e) => {
             let error_msg = format!("数据库查询错误: {:?}", e);
             println!("{}", error_msg);

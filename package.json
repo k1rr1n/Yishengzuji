@@ -10,12 +10,15 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-language": "^1.0.1",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-shell": "^2",
+    "dayjs": "^1.11.13",
     "mapbox-gl": "^3.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.0.2",
+    "react-tailwindcss-datepicker": "^1.7.2",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
