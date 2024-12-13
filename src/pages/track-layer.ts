@@ -1,7 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
+import type { Point, TrackInfo } from "./type";
 
 interface Options {
   map: mapboxgl.Map;
+  onLoadingChange: (loading: boolean) => void;
+  onInfoChange: (info: Partial<TrackInfo>) => void;
 }
 
 export type LayerInfo = {
@@ -15,15 +18,19 @@ export class TrackLayer {
   private data: any;
   private activeSources: Set<string> = new Set();
   private activeLayers: Set<string> = new Set();
+  private onLoadingChange: (loading: boolean) => void;
+  private onInfoChange: (info: Partial<TrackInfo>) => void;
 
   constructor(options: Options) {
     this.map = options.map;
+    this.onLoadingChange = options.onLoadingChange;
+    this.onInfoChange = options.onInfoChange;
     this.init();
   }
 
   protected async init(): Promise<void> {
+    this.onLoadingChange(true);
     await this.loadData();
-    await this.loadLayers();
   }
 
   public async loadData(startTime: number = 0, endTime: number = 1800000000) {
@@ -32,9 +39,13 @@ export class TrackLayer {
       endTime,
     });
 
+    this.onInfoChange({
+      count: (res as Point[]).length,
+    });
+
     this.data = {
       type: "FeatureCollection",
-      features: (res as any[]).map((p) => ({
+      features: (res as Point[]).map((p) => ({
         type: "Feature",
         geometry: {
           type: "Point",
@@ -45,6 +56,11 @@ export class TrackLayer {
         },
       })),
     };
+
+    await Promise.all([
+      this.loadLayers(),
+      this.getTotalDistance(startTime, endTime),
+    ]);
   }
 
   private async loadLayers() {
@@ -78,6 +94,8 @@ export class TrackLayer {
       this.map.getCanvas().style.cursor = "";
     });
 
+    this.onLoadingChange(false);
+
     // this.map.on("click", layerId, (e) => {
     //   if (!e.features || !e.features[0]) return;
     //   const properties = e.features[0].properties;
@@ -89,6 +107,17 @@ export class TrackLayer {
 
     //       `)
     // });
+  }
+
+  private async getTotalDistance(startTime: number, endTime: number) {
+    const res = await invoke("get_total_distance", {
+      startTime,
+      endTime,
+    });
+
+    this.onInfoChange({
+      totalDistance: Number(((res as number) / 1000).toFixed(2)),
+    });
   }
 
   public getLayersInfo(): LayerInfo[] {

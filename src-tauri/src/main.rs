@@ -6,7 +6,7 @@ mod command;
 mod db;
 
 use auth::{get_login_state, login, logout};
-use command::get_track_data;
+use command::{get_total_distance, get_track_data};
 use db::DbConnection;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -26,7 +26,8 @@ async fn main() {
             login,
             logout,
             get_login_state,
-            get_track_data
+            get_track_data,
+            get_total_distance,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

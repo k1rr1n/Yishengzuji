@@ -1,8 +1,5 @@
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgPoolOptions;
-use sqlx::Error;
 use sqlx::{Pool, Postgres, Row};
-use std::time::Duration;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Point {
@@ -27,14 +24,10 @@ pub struct DbConnection {
 impl DbConnection {
     pub async fn new() -> Result<Self, sqlx::Error> {
         let database_url = "postgres://default:toH1xYSMfEW6@ep-green-tree-a43jhf6a.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require";
-
-        let pool = PgPoolOptions::new()
+        let pool = sqlx::postgres::PgPoolOptions::new()
             .max_connections(5)
-            .acquire_timeout(Duration::from_secs(3))
             .connect(database_url)
             .await?;
-
-        sqlx::query("SELECT 1").execute(&pool).await?;
 
         Ok(Self { pool })
     }
@@ -43,14 +36,10 @@ impl DbConnection {
         &self,
         start_time: i64,
         end_time: i64,
-    ) -> Result<Vec<Point>, Error> {
-        println!("查询时间范围: {} 到 {}", start_time, end_time);
-
-        let mut retries = 3;
-        while retries > 0 {
-            match sqlx::query(
-                r#"
-                SELECT 
+    ) -> Result<Vec<Point>, sqlx::Error> {
+        sqlx::query(
+            r#"
+                select 
                     id, data_time, loc_type, 
                     longitude::float8 as longitude,
                     latitude::float8 as latitude,
@@ -60,46 +49,44 @@ impl DbConnection {
                     distance::float8 as distance,
                     is_back_foreground, step_type,
                     altitude::float8 as altitude
-                FROM lifetime 
-                WHERE data_time BETWEEN $1 AND $2 
-                ORDER BY data_time ASC
+                from lifetime 
+                where data_time between $1 and $2 
+                order by data_time asc
                 "#,
-            )
-            .bind(start_time)
-            .bind(end_time)
-            .try_map(|row: sqlx::postgres::PgRow| {
-                Ok(Point {
-                    id: row.get("id"),
-                    data_time: row.get("data_time"),
-                    loc_type: row.get("loc_type"),
-                    longitude: row.get("longitude"),
-                    latitude: row.get("latitude"),
-                    heading: row.get("heading"),
-                    accuracy: row.get("accuracy"),
-                    speed: row.get("speed"),
-                    distance: row.get("distance"),
-                    is_back_foreground: row.get("is_back_foreground"),
-                    step_type: row.get("step_type"),
-                    altitude: row.get("altitude"),
-                })
-            })
-            .fetch_all(&self.pool)
-            .await
-            {
-                Ok(results) => {
-                    println!("查询成功，返回 {} 条记录", results.len());
-                    return Ok(results);
-                }
-                Err(e) => {
-                    println!("查询错误 (剩余重试次数: {}): {:?}", retries - 1, e);
-                    retries -= 1;
-                    if retries == 0 {
-                        return Err(e);
-                    }
-                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
-                }
-            }
-        }
-        Err(Error::PoolTimedOut)
+        )
+        .bind(start_time)
+        .bind(end_time)
+        .map(|row: sqlx::postgres::PgRow| Point {
+            id: row.get("id"),
+            data_time: row.get("data_time"),
+            loc_type: row.get("loc_type"),
+            longitude: row.get("longitude"),
+            latitude: row.get("latitude"),
+            heading: row.get("heading"),
+            accuracy: row.get("accuracy"),
+            speed: row.get("speed"),
+            distance: row.get("distance"),
+            is_back_foreground: row.get("is_back_foreground"),
+            step_type: row.get("step_type"),
+            altitude: row.get("altitude"),
+        })
+        .fetch_all(&self.pool)
+        .await
+    }
+
+    pub async fn get_total_distance(
+        &self,
+        start_time: i64,
+        end_time: i64,
+    ) -> Result<f64, sqlx::Error> {
+        sqlx::query(r#"
+            select coalesce(sum(case when distance is null or distance = 0 then 0 else distance::float8 end), 0)::float8 as total_distance
+            from lifetime where data_time between $1 and $2
+        "#,)
+        .bind(start_time)
+        .bind(end_time)
+        .fetch_one(&self.pool)
+        .await
+        .map(|row| row.get::<f64, _>("total_distance"))
     }
 }
