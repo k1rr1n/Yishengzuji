@@ -12,7 +12,7 @@ export default function Layout() {
           <div className="flex items-center">
             <img src={logo} alt="Logo" className="h-8 w-auto mr-2" />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              Through Life  <span className="tracking-wide">一生足迹</span>
+              Through Life <span className="tracking-wide">一生足迹</span>
             </span>
           </div>
         </div>

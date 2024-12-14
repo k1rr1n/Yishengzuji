@@ -8,6 +8,9 @@ import { TrackLayer } from "./track-layer";
 import type { TrackInfo } from "./type";
 import "mapbox-gl/dist/mapbox-gl.css";
 
+const accessToken =
+  "pk.eyJ1Ijoic3lhMDcyNCIsImEiOiJjbHpsY3hlbHUwMWxiMmpxcnNqaWJsb3gxIn0.oklNauuQwt0D1iXPtfH0JA";
+
 const MapView: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -46,13 +49,11 @@ const MapView: React.FC = () => {
     if (!mapContainer.current) return;
 
     const initMap = async () => {
-      mapboxgl.accessToken =
-        "pk.eyJ1Ijoic3lhMDcyNCIsImEiOiJjbHpsY3hlbHUwMWxiMmpxcnNqaWJsb3gxIn0.oklNauuQwt0D1iXPtfH0JA";
-
       map.current = new mapboxgl.Map({
         container: mapContainer.current!,
         style: "mapbox://styles/mapbox/dark-v11",
         center: [116, 39.5],
+        accessToken,
         zoom: 7,
       });
 
@@ -74,8 +75,15 @@ const MapView: React.FC = () => {
       );
 
       await new Promise<void>((resolve) => {
-        map.current!.once("load", () => resolve());
+        map.current!.once("load", () => {
+          console.log("map loaded successfully");
+          resolve();
+        });
       });
+
+      // map.current!.setConfigProperty("basemap", "lightPreset", "night");
+      // map.current!.setConfigProperty("basemap", "show3dObjects", true);
+
       trackLayer.current = new TrackLayer({
         map: map.current,
         onLoadingChange: setIsLoading,
@@ -111,11 +119,27 @@ const MapView: React.FC = () => {
         </div>
       )}
 
-      <div className="fixed z-50 left-4 bottom-24">
+      <div className="fixed z-50 left-4 bottom-40">
+        <Datepicker
+          value={date}
+          onChange={(newDate) => setDate(newDate as any)}
+          showShortcuts={true}
+          placeholder="定义一段时光"
+          required
+          configs={{
+            shortcuts: {
+              today: "今日",
+              yesterday: "昨日",
+              past: (period) => "过去 " + period + " 日",
+            },
+          }}
+        />
+      </div>
+
+      <div className="fixed z-50 left-4 bottom-10 bg-gray-800/70 backdrop-blur-sm p-3 rounded-lg">
         <p className="text-gray-950 dark:text-gray-50 tracking-wide">
           这段时光里，
-          <br />
-          "一生足迹" 为我记录了
+          <br />「 Through Life 」 为我记录了
           <span className="px-2 text-md font-bold text-red-500">
             {info.count ? (
               <CountUp
@@ -161,23 +185,6 @@ const MapView: React.FC = () => {
           </span>
           千米
         </p>
-      </div>
-
-      <div className="fixed z-50 left-4 bottom-10">
-        <Datepicker
-          value={date}
-          onChange={(newDate) => setDate(newDate as any)}
-          showShortcuts={true}
-          placeholder="自定义查看足迹👣"
-          required
-          configs={{
-            shortcuts: {
-              today: "今日",
-              yesterday: "昨日",
-              past: (period) => "过去 " + period + " 日",
-            },
-          }}
-        />
       </div>
 
       <div ref={mapContainer} className="w-full h-full" />

@@ -23,11 +23,22 @@ pub struct DbConnection {
 
 impl DbConnection {
     pub async fn new() -> Result<Self, sqlx::Error> {
-        let database_url = "postgres://default:toH1xYSMfEW6@ep-green-tree-a43jhf6a.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require";
-        let pool = sqlx::postgres::PgPoolOptions::new()
+        let database_url = "postgres://zhangyiyang:040724@localhost:5432/postgres";
+        // let database_url = "postgres://default:toH1xYSMfEW6@ep-green-tree-a43jhf6a.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require";
+        let pool = match sqlx::postgres::PgPoolOptions::new()
             .max_connections(5)
             .connect(database_url)
-            .await?;
+            .await
+        {
+            Ok(pool) => {
+                println!("成功连接数据库");
+                pool
+            }
+            Err(e) => {
+                println!("数据库连接失败: {:?}", e);
+                return Err(e);
+            }
+        };
 
         Ok(Self { pool })
     }
@@ -37,7 +48,7 @@ impl DbConnection {
         start_time: i64,
         end_time: i64,
     ) -> Result<Vec<Point>, sqlx::Error> {
-        sqlx::query(
+        let result = sqlx::query(
             r#"
                 select 
                     id, data_time, loc_type, 
@@ -71,7 +82,14 @@ impl DbConnection {
             altitude: row.get("altitude"),
         })
         .fetch_all(&self.pool)
-        .await
+        .await;
+
+        match &result {
+            Ok(points) => println!("轨迹数据查询成功，查询到{}个轨迹点", points.len()),
+            Err(e) => println!("轨迹数据查询失败: {:?}", e),
+        }
+
+        result
     }
 
     pub async fn get_total_distance(
@@ -79,7 +97,7 @@ impl DbConnection {
         start_time: i64,
         end_time: i64,
     ) -> Result<f64, sqlx::Error> {
-        sqlx::query(r#"
+        let result = sqlx::query(r#"
             select coalesce(sum(case when distance is null or distance = 0 then 0 else distance::float8 end), 0)::float8 as total_distance
             from lifetime where data_time between $1 and $2
         "#,)
@@ -87,6 +105,13 @@ impl DbConnection {
         .bind(end_time)
         .fetch_one(&self.pool)
         .await
-        .map(|row| row.get::<f64, _>("total_distance"))
+        .map(|row| row.get::<f64, _>("total_distance"));
+
+        match &result {
+            Ok(distance) => println!("距离计算成功，{}米", distance),
+            Err(e) => println!("距离计算失败, {:?}", e),
+        }
+
+        result
     }
 }

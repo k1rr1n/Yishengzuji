@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Point, TrackInfo } from "./type";
+import mapboxgl from "mapbox-gl";
 
 interface Options {
   map: mapboxgl.Map;
@@ -81,8 +82,23 @@ export class TrackLayer {
         "circle-radius": 3,
         "circle-color": "#ff8c00",
         "circle-opacity": 0.8,
+        'circle-emissive-strength': 1,
       },
     });
+
+    // 自动缩放定位
+    const bounds = new mapboxgl.LngLatBounds();
+    this.data.features.forEach((f: any) => {
+      bounds.extend(f.geometry.coordinates);
+    });
+    this.map.fitBounds(bounds, {
+      padding: 10,
+      maxZoom: 18,
+      pitch: 30 + Math.random() * 30,
+      bearing: Math.random() * 90 - 45,
+      duration: 2000,
+    });
+
     this.activeSources.add(sourceId);
     this.activeLayers.add(layerId);
 
