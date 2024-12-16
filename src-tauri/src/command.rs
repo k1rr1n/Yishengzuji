@@ -1,4 +1,4 @@
-use crate::db::{DbConnection, Point};
+use crate::db::{CityStats, DailyStats, DbConnection, Point};
 use std::sync::Arc;
 use tauri::State;
 use tokio::sync::Mutex;
@@ -35,6 +35,32 @@ pub async fn get_total_distance(
         Ok(total) => Ok(total),
         Err(e) => {
             let error_msg = format!("error calc total distance: {:?}", e);
+            println!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
+#[tauri::command]
+pub async fn get_city_stats(db: State<'_, DbState>) -> Result<Vec<CityStats>, String> {
+    let db = db.lock().await;
+    match db.get_city_stats().await {
+        Ok(stats) => Ok(stats),
+        Err(e) => {
+            let error_msg = format!("获取城市统计数据失败: {:?}", e);
+            println!("{}", error_msg);
+            Err(error_msg)
+        }
+    }
+}
+
+#[tauri::command]
+pub async fn get_daily_stats(db: State<'_, DbState>) -> Result<Vec<DailyStats>, String> {
+    let db = db.lock().await;
+    match db.get_daily_stats().await {
+        Ok(stats) => Ok(stats),
+        Err(e) => {
+            let error_msg = format!("获取工作日/周末统计数据失败: {:?}", e);
             println!("{}", error_msg);
             Err(error_msg)
         }

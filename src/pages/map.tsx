@@ -5,8 +5,9 @@ import dayjs from "dayjs";
 import Datepicker from "react-tailwindcss-datepicker";
 import CountUp from "react-countup";
 import { TrackLayer } from "./track-layer";
-import type { TrackInfo } from "./type";
+import type { CityStats, DailyStats, TrackInfo } from "./type";
 import "mapbox-gl/dist/mapbox-gl.css";
+import Modal from "./modal";
 
 const accessToken =
   "pk.eyJ1Ijoic3lhMDcyNCIsImEiOiJjbHpsY3hlbHUwMWxiMmpxcnNqaWJsb3gxIn0.oklNauuQwt0D1iXPtfH0JA";
@@ -18,31 +19,43 @@ const MapView: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [date, setDate] = useState({
-    startDate: null,
-    endDate: null,
+    startDate: 0,
+    endDate: 1800000000,
   });
   const [info, setInfo] = useState<Partial<TrackInfo>>({
     totalDistance: 0,
     count: 0,
     currentPoint: undefined,
   });
+  const [analysis, setAnalysis] = useState<{
+    isModalOpen: boolean;
+    cityStats: CityStats[];
+    dailyStats: DailyStats[];
+  }>({
+    isModalOpen: false,
+    cityStats: [],
+    dailyStats: [],
+  });
 
   const handleSearch = async () => {
     if (!date.startDate || !date.endDate) {
       return;
     }
-
     setIsLoading(true);
     try {
       const startTime = dayjs(date.startDate).unix();
       const endTime = dayjs(date.endDate).unix();
-
+      await trackLayer.current?.destroy();
       await trackLayer.current?.loadData(startTime, endTime);
     } catch (error) {
       console.error("加载数据失败:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleAnalysis = async () => {
+    await trackLayer.current?.analyze();
   };
 
   useEffect(() => {
@@ -93,6 +106,14 @@ const MapView: React.FC = () => {
             ...info,
           }));
         },
+        onModalChange: (open: any, cityStats: any, dailyStats: any) => {
+          setAnalysis((prev) => ({
+            ...prev,
+            isModalOpen: open,
+            cityStats: cityStats || prev.cityStats,
+            dailyStats: dailyStats || prev.dailyStats,
+          }));
+        },
       });
     };
 
@@ -119,9 +140,10 @@ const MapView: React.FC = () => {
         </div>
       )}
 
+      {/* date picker */}
       <div className="fixed z-50 left-4 bottom-40">
         <Datepicker
-          value={date}
+          value={date as any}
           onChange={(newDate) => setDate(newDate as any)}
           showShortcuts={true}
           placeholder="定义一段时光"
@@ -136,11 +158,12 @@ const MapView: React.FC = () => {
         />
       </div>
 
+      {/* count */}
       <div className="fixed z-50 left-4 bottom-10 bg-gray-800/70 backdrop-blur-sm p-3 rounded-lg">
         <p className="text-gray-950 dark:text-gray-50 tracking-wide">
           这段时光里，
           <br />「 Through Life 」 为我记录了
-          <span className="px-2 text-md font-bold text-red-500">
+          <span className="px-2 text-md font-bold text-orange-600">
             {info.count ? (
               <CountUp
                 end={info.count}
@@ -163,7 +186,7 @@ const MapView: React.FC = () => {
           个轨迹点，
           <br />
           陪我走过
-          <span className="px-2 text-md font-bold text-red-500">
+          <span className="px-2 text-md font-bold text-orange-600">
             {info.totalDistance ? (
               <CountUp
                 end={info.totalDistance}
@@ -187,6 +210,28 @@ const MapView: React.FC = () => {
         </p>
       </div>
 
+      {/* analysis button */}
+      <button
+        onClick={handleAnalysis}
+        disabled={isLoading}
+        className={`fixed z-50 left-72 bottom-40 rounded-lg px-3 py-2 text-gray-50 shadow-lg transform transition-all duration-150 ${
+          isLoading
+            ? "bg-orange-600/60 cursor-not-allowed opacity-50"
+            : "bg-orange-600 hover:scale-105 active:scale-100"
+        }`}
+      >
+        <div>时光便签</div>
+      </button>
+
+      {/* analysis modal */}
+      <Modal
+        isOpen={analysis.isModalOpen}
+        onClose={() => setAnalysis((prev) => ({ ...prev, isModalOpen: false }))}
+        cityData={analysis.cityStats}
+        dailyData={analysis.dailyStats}
+      />
+
+      {/* map */}
       <div ref={mapContainer} className="w-full h-full" />
     </div>
   );

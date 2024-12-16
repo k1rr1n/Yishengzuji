@@ -10,6 +10,15 @@ export default {
       maxWidth: {
         "7xl": "80rem",
       },
+      animation: {
+        'bounce-slow': 'float 3s ease-in-out infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' },
+        }
+      }
     },
   },
   plugins: [],

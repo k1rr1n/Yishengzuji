@@ -1,12 +1,12 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
-  useNavigate,
+  // useNavigate,
 } from "react-router-dom";
 import Layout from "../pages/layout";
-import { useAuth } from "../utils/useAuth";
+// import { useAuth } from "../utils/useAuth";
 
 // 懒加载页面组件
 const Login = lazy(() => import("../pages/login"));
