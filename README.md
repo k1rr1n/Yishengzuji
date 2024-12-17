@@ -1,5 +1,6 @@
 <p align="center">
-  <strong>🏔️ Through Life 一生足迹</strong><br/>
+  <h3>🏔️ Through Life 一生足迹</h2>
+  <strong>Journey through my life with every moment captured.</strong>
 </p>
 
  --- 
