@@ -41,3 +41,7 @@ cargo tauri build
 ![image](https://github.com/user-attachments/assets/568d1852-9f83-476e-83a7-6fa3a1185d09)
 ![image](https://github.com/user-attachments/assets/0ee5ce06-487d-412b-8993-3f7e74d159f6)
 ![image](https://github.com/user-attachments/assets/8cfb07e1-94f9-4079-b5ae-984b2916d405)
+
+另外用户模块懒得维护啦
+- username: admin
+- password: password
