@@ -1,11 +1,11 @@
 <p align="center">
-  <h3>🏔️ Through Life 一生足迹</h2>
+  <h3>🏔️ Through Life 今生足迹</h2>
   <strong>Journey through my life with every moment captured.</strong>
 </p>
 
  --- 
  
-Through Life （一生足迹）是一款记录我的一生轨迹的 APP，使用 Rust 编写，性能优秀，同时具备优雅的交互效果。得益于 Tauri 框架，Through Life 能够在所有主流操作系统上运行
+Through Life （今生足迹）是一款记录我的一生轨迹的 APP，使用 Rust 编写，性能优秀，同时具备优雅的交互效果。得益于 Tauri 框架，Through Life 能够在所有主流操作系统上运行
 
 [![My Skills](https://skillicons.dev/icons?i=tauri,rust,ts,react,tailwind,postgresql)](https://skillicons.dev)
 
