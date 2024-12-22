@@ -8,9 +8,9 @@ import { TrackLayer } from "./track-layer";
 import type { CityStats, DailyStats, TrackInfo } from "./type";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Modal from "./modal";
+import { token } from "../../env";
 
-const accessToken =
-  "pk.eyJ1Ijoic3lhMDcyNCIsImEiOiJjbHpsY3hlbHUwMWxiMmpxcnNqaWJsb3gxIn0.oklNauuQwt0D1iXPtfH0JA";
+const accessToken = token;
 
 const MapView: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
